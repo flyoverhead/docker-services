@@ -156,6 +156,30 @@ xray_clients_config:
       shortId: 0123456789abcdef
 ```
 
+## Check mode
+
+`--check --diff` reports drift in `config.json`, the compose file and the client
+profiles against a host where the stack is already deployed.
+
+A check run does start one short-lived container. `detect | derive public key
+from private key` carries `check_mode: false` because `xray x25519 -i` computes
+the public half of the deployed private key and writes nothing, and the
+`-runtime` container is one-shot and cleaned up. Without it a check run reads no
+public key, concludes the keypair is missing, and reports reissuing the REALITY
+keypair and every client credential -- the exact reissue the tag assert in
+`detect.yml` exists to prevent.
+
+A check run never mints a secret. Whenever the REALITY keypair or a client
+credential is missing -- a first deployment, a newly added client,
+`xray_force_update_secrets` -- the generator container is skipped and the diff
+is rendered with `CHECK-MODE-PLACEHOLDER-*` values standing in for the UUID, the
+short id and the keys. So the diff tells you *which* clients would be added, not
+what their credentials will be; those are only issued on a real run.
+
+Detection also reads the running container through
+`community.docker.docker_container_info`, so a check run needs a reachable
+docker daemon.
+
 ## Tags
 
 | Tag | Purpose |

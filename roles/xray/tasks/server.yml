@@ -13,11 +13,17 @@
     detach: false
   register: xray_keys
   changed_when: true
+  when:
+    - not ansible_check_mode
 
 - name: config | set server keys fact
   ansible.builtin.set_fact:
     xray_private_key: >-
-      {{ xray_keys.container.Output | regex_search('(?<=PrivateKey: )(.*?)(?=\n)') }}
+      {{ xray_keys.container.Output | regex_search('(?<=PrivateKey: )(.*?)(?=\n)')
+      if not ansible_check_mode
+      else 'CHECK-MODE-PLACEHOLDER-PRIVATE-KEY' }}
     xray_public_key: >-
-      {{ xray_keys.container.Output | regex_search('(?<=Password \(PublicKey\): )(.*?)(?=\n)') }}
+      {{ xray_keys.container.Output | regex_search('(?<=Password \(PublicKey\): )(.*?)(?=\n)')
+      if not ansible_check_mode
+      else 'CHECK-MODE-PLACEHOLDER-PUBLIC-KEY' }}
   no_log: true

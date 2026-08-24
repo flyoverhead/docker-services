@@ -20,6 +20,7 @@
       ansible.builtin.command:
         cmd: sqlite3 {{ pihole_gravity_db }} "SELECT COUNT(*) FROM domainlist WHERE type='3'"
       register: pihole_domain_blacklist
+      check_mode: false
       changed_when: pihole_domain_blacklist.stdout != pihole_lists.domain_blacklist
       notify:
         - pihole | clean domain blacklist
@@ -31,6 +32,7 @@
       ansible.builtin.command:
         cmd: sqlite3 {{ pihole_gravity_db }} "SELECT COUNT(*) FROM domainlist WHERE type='2'"
       register: pihole_domain_whitelist
+      check_mode: false
       changed_when: pihole_domain_whitelist.stdout != pihole_lists.domain_whitelist
       notify:
         - pihole | clean domain whitelist
@@ -42,6 +44,7 @@
       ansible.builtin.command:
         cmd: sqlite3 {{ pihole_gravity_db }} "SELECT COUNT(*) FROM adlist"
       register: pihole_adlist
+      check_mode: false
       changed_when: pihole_adlist.stdout != pihole_lists.adlist
       notify:
         - pihole | add adlist

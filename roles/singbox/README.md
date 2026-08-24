@@ -211,6 +211,23 @@ singbox_clients_config:
       short_id: 0123456789abcdef
 ```
 
+## Check mode
+
+`--check --diff` reports drift in `config.json`, the compose file and the client
+profiles against a host where the stack is already deployed. Detection is
+`stat` and `slurp` only, so it needs nothing special in a check run.
+
+A check run never mints a secret. Whenever the REALITY keypair or a client
+credential is missing -- a first deployment, a newly added client,
+`singbox_force_update_secrets` -- the generator container is skipped and the
+diff is rendered with `CHECK-MODE-PLACEHOLDER-*` values standing in for the
+UUID, the short id and the keys. So the diff tells you *which* clients would be
+added, not what their credentials will be; those are only issued on a real run.
+
+Detection also reads the running container through
+`community.docker.docker_container_info`, so a check run needs a reachable
+docker daemon.
+
 ## Tags
 
 | Tag | Purpose |

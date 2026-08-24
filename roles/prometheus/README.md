@@ -101,6 +101,17 @@ prometheus_alert_jobs:
           - 192.168.1.1:9093
 ```
 
+## Check mode
+
+`--check --diff` reports drift in the rendered configuration and the compose
+file against a host where the stack is already deployed. The restart and
+recreate handlers report what they would do without touching the container.
+
+Detection reads the running container through
+`community.docker.docker_container_info`, so a check run needs a reachable
+docker daemon: against a host without the engine it fails in `detect.yml`. Run
+the `docker` role for real once first.
+
 ## Tags
 
 | Tag | Purpose |

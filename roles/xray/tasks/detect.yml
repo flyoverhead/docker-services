@@ -105,6 +105,7 @@
         command: xray x25519 -i {{ xray_private_key }}
         detach: false
       register: xray_derived_public_key
+      check_mode: false
       changed_when: false
       no_log: true
       when:

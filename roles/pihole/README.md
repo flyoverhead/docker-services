@@ -129,6 +129,22 @@ points at port 5353 on the same host:
           etc_dnsmasq_d: false
 ```
 
+## Check mode
+
+`--check --diff` reports drift in the rendered configuration and the compose
+file against a host where the stack is already deployed, and it reports list
+drift too. The three `SELECT COUNT(*)` probes in `config.yml` carry
+`check_mode: false` and run for real: they only read, and a skipped `command`
+has no `stdout` for `changed_when` to compare against, so without this a check
+run would call the lists converged whatever the `*.list` files hold. The
+handlers that wipe and repopulate `gravity.db` are `command` tasks with no
+`creates`/`removes`, so they skip in a check run and the database is never
+written.
+
+Detection reads the running container through
+`community.docker.docker_container_info`, so a check run needs a reachable
+docker daemon: against a host without the engine it fails in `detect.yml`.
+
 ## Tags
 
 | Tag | Purpose |
