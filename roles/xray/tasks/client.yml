@@ -10,9 +10,11 @@
     xray_generated_client_short_id: ''
 
 - name: client | generate secrets
-  when: >-
-    item.id | default('') | length == 0
-    or item.shortId | default('') | length == 0
+  when:
+    - >-
+      item.id | default('') | length == 0
+      or item.shortId | default('') | length == 0
+    - not ansible_check_mode
   block:
 
     - name: client | generate uuid
@@ -44,6 +46,16 @@
     - name: client | set short id fact
       ansible.builtin.set_fact:
         xray_generated_client_short_id: '{{ xray_client_short_id_output.container.Output | trim }}'
+
+- name: client | set placeholder secrets
+  ansible.builtin.set_fact:
+    xray_generated_client_uuid: CHECK-MODE-PLACEHOLDER-UUID
+    xray_generated_client_short_id: CHECK-MODE-PLACEHOLDER-SHORT-ID
+  when:
+    - >-
+      item.id | default('') | length == 0
+      or item.shortId | default('') | length == 0
+    - ansible_check_mode
 
 - name: client | set uuid and short id facts
   ansible.builtin.set_fact:

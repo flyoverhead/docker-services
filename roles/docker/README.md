@@ -62,6 +62,16 @@ docker_daemon_config:
       size: 24
 ```
 
+## Check mode
+
+`--check --diff` reports drift in `daemon.json` and in the docker group
+membership against a host that already has the engine installed.
+
+It does not work against a host that does not: `install.yml` only simulates the
+apt install, so the `docker` group is never created, and `config | add users to
+docker group` then fails on a group that does not exist. Run the role for real
+once before using check mode on a new host.
+
 ## Tags
 
 | Tag | Purpose |

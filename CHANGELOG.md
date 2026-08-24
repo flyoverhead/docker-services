@@ -2,6 +2,43 @@
 
 All notable changes to `flyoverhead.docker`.
 
+## 2.0.1
+
+### Fixed
+
+- **Check mode**: `ansible-playbook --check --diff` now completes against a host
+  this collection has already converged. Every role performed state discovery
+  with modules ansible-core does not execute in a check run and then
+  dereferenced the registered result unconditionally, so the play aborted on an
+  undefined attribute. Nothing in the collection had ever set `check_mode`.
+- **xray**: a check run failed in `detect.yml` even against a fully converged
+  host. `detect | derive public key from private key` runs a one-shot container,
+  and `community.docker.docker_container` does not run it in a check run, so
+  `xray_public_key` came out empty, `xray_server_keys_exists` turned false, and
+  `config.yml` walked into `server.yml` to reissue the REALITY keypair -- where
+  it failed on `xray_keys.container.Output`. That is the exact reissue the tag
+  assert in `detect.yml` exists to prevent. The derivation now carries
+  `check_mode: false`: `xray x25519 -i` only computes, and the `-runtime`
+  container is one-shot and cleaned up.
+- **pihole**: the three `SELECT COUNT(*)` list probes in `config.yml` are
+  `ansible.builtin.command`, which skips itself in a check run unless given
+  `creates`/`removes`, leaving `changed_when` no `stdout` to compare against --
+  so a check run called the lists converged whatever the `*.list` files held.
+  They now carry `check_mode: false`. The DELETE/INSERT handlers still skip, so
+  `gravity.db` is never written in a check run.
+
+### Changed
+
+- **singbox**, **xray**: secret generation is now explicitly skipped in a check
+  run (`when: not ansible_check_mode`) and the consuming `set_fact` substitutes
+  `CHECK-MODE-PLACEHOLDER-*` values. A check run can therefore preview a newly
+  added client or a first deployment instead of failing on the missing container
+  output, and it never mints a real UUID, short id or keypair.
+- Every role README gained a `## Check mode` section stating what a check run
+  covers and what it cannot -- notably that the container roles need a reachable
+  docker daemon for detection, so check mode does not work against a host that
+  does not have the engine yet.
+
 ## 2.0.0
 
 Synchronization release: every role brought onto one structure, one set of

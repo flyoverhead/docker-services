@@ -13,11 +13,17 @@
     detach: false
   register: singbox_keys
   changed_when: true
+  when:
+    - not ansible_check_mode
 
 - name: config | set server keys fact
   ansible.builtin.set_fact:
     singbox_private_key: >-
-      {{ singbox_keys.container.Output | regex_search('(?<=PrivateKey: )(.*?)(?=\n)') }}
+      {{ singbox_keys.container.Output | regex_search('(?<=PrivateKey: )(.*?)(?=\n)')
+      if not ansible_check_mode
+      else 'CHECK-MODE-PLACEHOLDER-PRIVATE-KEY' }}
     singbox_public_key: >-
-      {{ singbox_keys.container.Output | regex_search('(?<=PublicKey: )(.*?)(?=\n)') }}
+      {{ singbox_keys.container.Output | regex_search('(?<=PublicKey: )(.*?)(?=\n)')
+      if not ansible_check_mode
+      else 'CHECK-MODE-PLACEHOLDER-PUBLIC-KEY' }}
   no_log: true
