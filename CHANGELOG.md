@@ -2,7 +2,7 @@
 
 All notable changes to `flyoverhead.docker`.
 
-## Unreleased
+## 2.0.1
 
 ### Fixed
 
