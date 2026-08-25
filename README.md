@@ -1,18 +1,14 @@
 # `flyoverhead.docker`
 
+[![Version](https://img.shields.io/badge/version-2.0.1-blue)](galaxy.yml)
+[![ansible-core](https://img.shields.io/badge/ansible--core-%E2%89%A52.16-black?logo=ansible&logoColor=white)](https://docs.ansible.com/ansible-core/devel/index.html)
+[![License](https://img.shields.io/badge/license-GPL--3.0--only-green)](https://www.gnu.org/licenses/gpl-3.0)
+[![Platform](https://img.shields.io/badge/platform-Debian%2012%20%7C%2013-A81D33?logo=debian&logoColor=white)](#-supported-os)
+[![Roles](https://img.shields.io/badge/roles-10-orange)](#-roles)
+
 Docker services deployment and configuration.
 
-## Supported OS
-
-| OS | Status |
-| :--- | :--- |
-| Debian 12 "Bookworm" (AArch64, x86_64) | Tested |
-| Debian 13 "Trixie" | Supported, untested |
-
-Debian 11 "Bullseye" is no longer listed: nothing in the collection is
-bullseye-specific, but it is out of standard support and is not tested.
-
-## Installation and Usage
+## 🚀 Quick Start
 
 ### Requirements
 
@@ -71,12 +67,20 @@ Run `flyoverhead.docker.docker` first, on every host. Every other role reads
     - flyoverhead.docker.xray
 ```
 
-`singbox` and `xray` both default to listening on `:443`, so pick one per host
-or move one of them to another port.
+## 🖥 Supported OS
 
-## Included content
+| OS | Status |
+| :--- | :--- |
+| Debian 12 "Bookworm" (AArch64, x86_64) | Tested |
+| Debian 13 "Trixie" | Supported, untested |
 
-### Roles
+Debian 11 "Bullseye" is no longer listed: nothing in the collection is
+bullseye-specific, but it is out of standard support and is not tested.
+
+## 📦 Roles
+
+<details>
+<summary><b>All 10 roles</b> — image and pinned tag for each</summary>
 
 | Name | Description | Image | Version |
 | :--- | :--- | :--- | :--- |
@@ -91,11 +95,16 @@ or move one of them to another port.
 | [torrserver](roles/torrserver/README.md) | `TorrServer` torrent streaming | `ghcr.io/yourok/torrserver` | `MatriX.143` |
 | [xray](roles/xray/README.md) | `Xray` VLESS + REALITY VPN | `teddysun/xray` | `26.7.28` |
 
+</details>
+
 Every image tag is pinned in the role's `defaults/main.yml`. Nothing tracks a
 moving tag: the update detection in each role compares the running container's
 image against the pinned tag, which a moving tag would defeat.
 
-### Role structure
+## 🏗 Role Structure
+
+<details>
+<summary><b>The five files every service role has</b> — and why an image change recreates rather than restarts</summary>
 
 Every service role follows the same shape:
 
@@ -112,7 +121,9 @@ bind-mounted configuration. An image change goes through `recreate container`
 (`docker compose up` with `pull: always`, `recreate: always`), because
 `restart` would keep running the old image.
 
-### Tags
+</details>
+
+## 🏷 Tags
 
 Every role exposes `<role>.detect`, `<role>.install`, `<role>.update` and,
 where it has one, `<role>.config`. The VPN roles use a different split —
@@ -127,7 +138,7 @@ ansible-playbook -i inventory.yml playbook.yml --tags prometheus.config,grafana.
 ansible-playbook -i inventory.yml playbook.yml --tags pihole.update
 ```
 
-## Testing
+## 🧪 Testing
 
 The `tests` directory holds a Vagrant-based integration harness: one Debian 12
 box running the whole stack, with the image tags pinned in
@@ -162,10 +173,15 @@ ansible-lint
 yamllint .
 ```
 
-## License
+## ⚠️ Gotchas
+
+- **`singbox` and `xray` both default to listening on `:443`**, so pick one per
+  host or move one of them to another port.
+
+## 📄 License
 
 - GPL-3.0-only
 
-## Author Information
+## 👤 Author Information
 
 fLy0v3rH34d
