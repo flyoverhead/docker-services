@@ -2,6 +2,19 @@
 
 All notable changes to `flyoverhead.docker`.
 
+## 2.0.2
+
+### Changed
+
+- Collection README only. Status badges for the collection version,
+  ansible-core requirement, license, supported platform and role count, and
+  section headings in an order shared with `flyoverhead.server` and
+  `flyoverhead.hosting` so the three read as one set. The role table and the
+  role-structure table moved into collapsible blocks, and the `:443` collision
+  between `singbox` and `xray` was promoted from a trailing paragraph to a
+  Gotchas section. No role, task, template or default changed; releasing it
+  only so the README that ships in the Galaxy tarball matches the repository.
+
 ## 2.0.1
 
 ### Fixed
