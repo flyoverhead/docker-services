@@ -22,6 +22,9 @@
 - name: update
   ansible.builtin.include_tasks:
     file: update.yml
+    apply:
+      tags:
+        - xray.docker
   when:
     - xray_container_update
   tags:
